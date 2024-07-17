@@ -2,6 +2,12 @@
 import flatpickr from 'flatpickr';
 // Додатковий імпорт стилів
 import 'flatpickr/dist/flatpickr.min.css';
+
+// Описаний у документації
+import iziToast from "izitoast";
+// Додатковий імпорт стилів
+import "izitoast/dist/css/iziToast.min.css";
+
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -22,13 +28,14 @@ function convertMs(ms) {
 }
 
 const button = document.querySelector('button');
-const seconds = document.querySelector('span.value[data-seconds]');
-const minutes = document.querySelector('span.value[data-minutes]');
-const hours = document.querySelector('span.value[data-hours]');
-
-const days = document.querySelector('span.value[data-days]');
+const secondsElement = document.querySelector('span.value[data-seconds]');
+const minutesElement = document.querySelector('span.value[data-minutes]');
+const hoursElement = document.querySelector('span.value[data-hours]');
+const daysElement = document.querySelector('span.value[data-days]');
 
 let userSelectedDate;
+
+button.disabled = true
 
 const options = {
   enableTime: true,
@@ -39,7 +46,12 @@ const options = {
     userSelectedDate = selectedDates[0];
     if (userSelectedDate.getTime() < Date.now()) {
       button.disabled = true;
-      alert('x');
+      iziToast.error({
+        position: "topRight",
+        messageColor: "white",
+        backgroundColor: "red",
+        message: "Please choose a date in the future"
+      })
     } else {
       button.disabled = false;
     }
@@ -50,14 +62,30 @@ const dateTimeInput = document.querySelector('#datetime-picker');
 
 flatpickr(dateTimeInput, options);
 
+function updateTimerDisplay({ days, hours, minutes, seconds }) {
+  secondsElement.textContent = String(seconds).padStart(2, '0');
+  minutesElement.textContent = String(minutes).padStart(2, '0');
+  hoursElement.textContent = String(hours).padStart(2, '0');
+  daysElement.textContent = String(days).padStart(2, '0');
+}
+
 function handleBtnClick(event) {
   button.disabled = true;
-  setInterval(() => {
+
+  const intervalId = setInterval(() => {
+
     let diff = userSelectedDate - Date.now();
-    seconds.textContent = String(convertMs(diff).seconds).padStart(2, '0');
-    minutes.textContent = String(convertMs(diff).minutes).padStart(2, '0');
-    hours.textContent = String(convertMs(diff).hours).padStart(2, '0');
-    days.textContent = String(convertMs(diff).days).padStart(2, '0');
+
+    if (diff <= 0) {
+      clearInterval(intervalId);
+      updateTimerDisplay({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      button.disabled = false
+      return;
+    }
+
+    const timeLeft = convertMs(diff)
+
+    updateTimerDisplay(timeLeft)
   }, 1000);
 }
 
