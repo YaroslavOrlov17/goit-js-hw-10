@@ -58,7 +58,7 @@ button {
 
 /* ------------------------------ */
 
-#datetime-picker {
+/* #datetime-picker {
     border-radius: 4px;
     border: 1px solid #808080;
     width: 272px;
@@ -190,4 +190,4 @@ fieldset {
 .snackbar-style:hover {
     transition: 250ms ease;
     color: #4e75ff;
-}
+} */
