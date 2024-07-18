@@ -70,6 +70,7 @@ function updateTimerDisplay({ days, hours, minutes, seconds }) {
 }
 
 function handleBtnClick(event) {
+  dateTimeInput.disabled = true
   button.disabled = true;
 
   const intervalId = setInterval(() => {
@@ -77,9 +78,9 @@ function handleBtnClick(event) {
     let diff = userSelectedDate - Date.now();
 
     if (diff <= 0) {
+      dateTimeInput.disabled = false
       clearInterval(intervalId);
       updateTimerDisplay({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-      button.disabled = false
       return;
     }
 
